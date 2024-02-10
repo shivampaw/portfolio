@@ -138,6 +138,8 @@ public class Messages extends NLS
     public static String LabelRemovals;
     public static String LabelReportingPeriodCurrentMonth;
     public static String LabelReportingPeriodCurrentQuarter;
+    public static String LabelReportingPeriodCurrentFinancialYear;
+    public static String LabelReportingPeriodPreviousFinancialYear;
     public static String LabelReportingPeriodCurrentWeek;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodLastXDays;

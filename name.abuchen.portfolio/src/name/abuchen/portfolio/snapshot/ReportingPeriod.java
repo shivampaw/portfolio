@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.WeekFields;
@@ -42,6 +43,8 @@ public abstract class ReportingPeriod
         CURRENT_WEEK('W', CurrentWeek.class), //
         CURRENT_MONTH('M', CurrentMonth.class), //
         CURRENT_QUARTER('Q', CurrentQuarter.class), //
+        CURRENT_FINANCIAL_YEAR('G', CurrentFinancialYear.class), //
+        PREVIOUS_FINANCIAL_YEAR('J', PreviousFinancialYear.class), //
         YEAR_TO_DATE('X', YearToDate.class), //
         SINCE_X('S', SinceX.class), //
         FROM_X_TO_Y('F', FromXtoY.class), //
@@ -57,6 +60,8 @@ public abstract class ReportingPeriod
             this.implementation = implementation;
         }
     }
+
+    private static final MonthDay FINANCIAL_START = MonthDay.of(4, 6);
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
 
@@ -581,6 +586,76 @@ public abstract class ReportingPeriod
         public int hashCode()
         {
             return Objects.hashCode(Type.CURRENT_QUARTER);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class CurrentFinancialYear extends ReportingPeriod
+    {
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate candidate = relativeTo.with(FINANCIAL_START);
+            LocalDate startDate = (candidate.isAfter(relativeTo) ? candidate.minusYears(1) : candidate).minusDays(1);
+
+            return Interval.of(startDate, relativeTo);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentFinancialYear;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(Type.CURRENT_FINANCIAL_YEAR);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class PreviousFinancialYear extends ReportingPeriod
+    {
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate currentCandidate = relativeTo.with(FINANCIAL_START);
+            LocalDate currentStart = currentCandidate.isAfter(relativeTo) ? currentCandidate.minusYears(1)
+                            : currentCandidate;
+            LocalDate previousStart = currentStart.minusYears(1).minusDays(1);
+
+            return Interval.of(previousStart, currentStart.minusDays(1));
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodPreviousFinancialYear;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(Type.PREVIOUS_FINANCIAL_YEAR);
         }
 
         @Override

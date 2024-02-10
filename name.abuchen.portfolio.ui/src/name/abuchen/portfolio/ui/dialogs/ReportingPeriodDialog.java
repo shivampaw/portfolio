@@ -66,6 +66,8 @@ public class ReportingPeriodDialog extends Dialog
     private Button radioPreviousMonth;
     private Button radioPreviousQuarter;
     private Button radioPreviousYear;
+    private Button radioCurrentFY;
+    private Button radioPreviousFY;
 
     private List<Button> radioBtnList;
 
@@ -183,6 +185,12 @@ public class ReportingPeriodDialog extends Dialog
         radioPreviousYear = new Button(editArea, SWT.RADIO);
         radioPreviousYear.setText(Messages.LabelReportingDialogYear);
 
+        radioCurrentFY = new Button(editArea, SWT.RADIO);
+        radioCurrentFY.setText(Messages.LabelReportingDialogFinancialYear);
+
+        radioPreviousFY = new Button(editArea, SWT.RADIO);
+        radioPreviousFY.setText(Messages.LabelReportingDialogFinancialYear);
+
         //
         // form layout
         //
@@ -230,11 +238,13 @@ public class ReportingPeriodDialog extends Dialog
         FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
         FormDataFactory.startingWith(lblCurrent).top(new FormAttachment(radioYearX, 20)).thenBelow(radioCurrentWeek)
-                        .thenRight(radioCurrentMonth).thenRight(radioCurrentQuarter).thenRight(radioYTD);
+                        .thenRight(radioCurrentMonth).thenRight(radioCurrentQuarter).thenRight(radioYTD)
+                        .thenRight(radioCurrentFY);
 
         FormDataFactory.startingWith(lblPrevious).top(new FormAttachment(radioCurrentWeek, 20))
                         .thenBelow(radioPreviousDay).thenRight(radioPreviousTradingDay).thenRight(radioPreviousWeek)
-                        .thenRight(radioPreviousMonth).thenRight(radioPreviousQuarter).thenRight(radioPreviousYear);
+                        .thenRight(radioPreviousMonth).thenRight(radioPreviousQuarter).thenRight(radioPreviousYear)
+                        .thenRight(radioPreviousFY);
 
         //
         // wiring
@@ -246,7 +256,7 @@ public class ReportingPeriodDialog extends Dialog
         radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
                         radioYearX, radioCurrentWeek, radioCurrentMonth, radioCurrentQuarter, radioYTD,
                         radioPreviousTradingDay, radioPreviousWeek, radioPreviousMonth, radioPreviousQuarter,
-                        radioPreviousYear, radioPreviousDay);
+                        radioPreviousYear, radioPreviousDay, radioPreviousFY, radioCurrentFY);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -317,6 +327,10 @@ public class ReportingPeriodDialog extends Dialog
             radioPreviousQuarter.setSelection(true);
         else if (template instanceof ReportingPeriod.PreviousYear)
             radioPreviousYear.setSelection(true);
+        else if (template instanceof ReportingPeriod.CurrentFinancialYear)
+            radioCurrentFY.setSelection(true);
+        else if (template instanceof ReportingPeriod.PreviousFinancialYear)
+            radioPreviousFY.setSelection(true);
         else
             throw new IllegalArgumentException();
 
@@ -411,6 +425,14 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioPreviousYear.getSelection())
         {
             result = new ReportingPeriod.PreviousYear();
+        }
+        else if (radioCurrentFY.getSelection())
+        {
+            result = new ReportingPeriod.CurrentFinancialYear();
+        }
+        else if (radioPreviousFY.getSelection())
+        {
+            result = new ReportingPeriod.PreviousFinancialYear();
         }
         else
         {
